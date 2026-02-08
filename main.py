@@ -19,9 +19,10 @@ if not DATABASE_URL:
     raise RuntimeError("DATABASE_URL no definida")
 
 engine = create_engine(
-    DATABASE_URL,
+    DATABASE_URL.replace("postgresql://", "postgresql+psycopg://"),
     echo=False
 )
+
 
 Session = sessionmaker(bind=engine)
 Base = declarative_base()
