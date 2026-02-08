@@ -4,6 +4,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Date
 from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy.exc import OperationalError
 import bcrypt
 import datetime
 import uvicorn
@@ -36,12 +37,8 @@ class License(Base):
     license_key = Column(String, nullable=False)
     expiration_date = Column(Date, nullable=True)
     machine_id = Column(String, default="")
-    active = Column(Boolean, default=True)  # 👈 SUSPENSIÓN
+    active = Column(Boolean, default=True)  # 👈 SUSPENSIÓN   
 
-   
-
-# Crear tablas si no existen
-Base.metadata.create_all(engine)
 
 # Instancia de FastAPI
 app = FastAPI()
@@ -69,6 +66,17 @@ class RenewRequest(BaseModel):
     admin_token: str
     username: str
     new_expiration_date: str  # YYYY-MM-DD
+    
+    
+    
+    
+@app.on_event("startup")
+def startup():
+    try:
+        Base.metadata.create_all(bind=engine)
+        logger.info("Base de datos inicializada correctamente")
+    except OperationalError as e:
+        logger.error(f"No se pudo conectar a la base de datos: {e}")
 
 # Endpoint de verificación de licencia
 @app.post("/verify")
