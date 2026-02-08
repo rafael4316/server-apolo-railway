@@ -1,0 +1,12 @@
+# Entornos virtuales
+venv/
+venv311/
+.env
+
+# Python
+__pycache__/
+*.pyc
+
+# Sistema
+.DS_Store
+Thumbs.db
