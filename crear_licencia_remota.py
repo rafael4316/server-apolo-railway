@@ -1,7 +1,8 @@
 import requests
 
 # 🔗 URL CORRECTA de tu servidor en Render
-url = "https://server-apolo.onrender.com/create_license"
+url = "https://server-apolo-railway-production.up.railway.app/create_license"
+
 
 # 🔐 USA EXACTAMENTE el mismo ADMIN_TOKEN que pusiste en Render
 payload = {

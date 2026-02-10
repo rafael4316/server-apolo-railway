@@ -223,10 +223,7 @@ async def suspend_license(data: ResetRequest):
 async def create_license(data: CreateLicenseRequest):
     ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN")
 
-    if not ADMIN_TOKEN:
-        raise HTTPException(status_code=500, detail="ADMIN_TOKEN no configurado.")
-
-    if data.admin_token != ADMIN_TOKEN:
+    if not ADMIN_TOKEN or data.admin_token != ADMIN_TOKEN:
         raise HTTPException(status_code=403, detail="No autorizado.")
 
     session = Session()
@@ -234,14 +231,15 @@ async def create_license(data: CreateLicenseRequest):
         if session.query(License).filter_by(username=data.username).first():
             raise HTTPException(status_code=409, detail="Usuario ya existe.")
 
-        expiration_date = datetime.datetime.fromisoformat(data.expiration_date).date()
-        pw_hash = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
+        pw_hash = bcrypt.hashpw(
+            data.password.encode(), bcrypt.gensalt()
+        ).decode()
 
         new_license = License(
             username=data.username,
             password_hash=pw_hash,
             license_key=data.license_key,
-            expiration_date=expiration_date,
+            expiration_date=data.expiration_date,
             machine_id=""
         )
 
@@ -252,6 +250,7 @@ async def create_license(data: CreateLicenseRequest):
 
     finally:
         session.close()
+
 
 
 @app.get("/licenses")
