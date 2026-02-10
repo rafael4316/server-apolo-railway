@@ -241,7 +241,7 @@ async def create_license(data: CreateLicenseRequest):
             username=data.username,
             password_hash=pw_hash,
             license_key=data.license_key,
-            expiration_date=data.expiration_date,  # 👈 AQUÍ VA
+            expiration_date=data.expiration_date,
             machine_id=""
         )
 
@@ -249,6 +249,10 @@ async def create_license(data: CreateLicenseRequest):
         session.commit()
 
         return {"success": True, "message": "Licencia creada correctamente."}
+
+    except Exception as e:
+        logger.exception("ERROR en /create_license")  # 👈 CLAVE
+        raise HTTPException(status_code=500, detail=str(e))
 
     finally:
         session.close()

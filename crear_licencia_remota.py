@@ -7,9 +7,9 @@ url = "https://server-apolo-railway-production.up.railway.app/create_license"
 # 🔐 USA EXACTAMENTE el mismo ADMIN_TOKEN que pusiste en Render
 payload = {
     "admin_token": "R4f43l_AP0L0_Secr3t_2025!!",
-    "username": "Apolo2026_user003",
-    "password": "Apolo2026_user003",
-    "license_key": "855-657-BIO",
+    "username": "prueba1",
+    "password": "prueba2",
+    "license_key": "855-JI7-BIO",
     "expiration_date": "2026-12-30"
 }
 
