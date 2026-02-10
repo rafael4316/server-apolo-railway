@@ -7,7 +7,9 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from sqlalchemy.exc import OperationalError
 import bcrypt
 import datetime
+from datetime import date
 import uvicorn
+
 
 # Configuración del logger
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -59,7 +61,7 @@ class CreateLicenseRequest(BaseModel):
     username: str
     password: str
     license_key: str
-    expiration_date: str  # Formato "YYYY-MM-DD"
+    expiration_date: date
     
     
 class RenewRequest(BaseModel):
@@ -239,7 +241,7 @@ async def create_license(data: CreateLicenseRequest):
             username=data.username,
             password_hash=pw_hash,
             license_key=data.license_key,
-            expiration_date=data.expiration_date,
+            expiration_date=data.expiration_date,  # 👈 AQUÍ VA
             machine_id=""
         )
 
