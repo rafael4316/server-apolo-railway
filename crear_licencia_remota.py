@@ -9,7 +9,7 @@ payload = {
     "admin_token": "R4f43l_AP0L0_Secr3t_2025!!",
     "username": "prueba1",
     "password": "prueba2",
-    "license_key": "855-JI7-BIO",
+    "license_key": "855-555-BIO",
     "expiration_date": "2026-12-30"
 }
 

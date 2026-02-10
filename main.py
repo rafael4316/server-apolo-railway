@@ -218,6 +218,30 @@ async def suspend_license(data: ResetRequest):
     finally:
         session.close()
 
+@app.post("/unsuspend_license")
+async def unsuspend_license(data: ResetRequest):
+    ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN")
+
+    if not ADMIN_TOKEN:
+        raise HTTPException(status_code=500, detail="ADMIN_TOKEN no configurado.")
+
+    if data.admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="No autorizado.")
+
+    session = Session()
+    try:
+        lic = session.query(License).filter_by(username=data.username).first()
+        if not lic:
+            raise HTTPException(status_code=404, detail="Licencia no encontrada.")
+
+        lic.active = True
+        session.commit()
+
+        return {"success": True, "message": "Licencia reactivada correctamente."}
+    finally:
+        session.close()
+
+
 
 
 # Endpoint para crear licencias remotamente

@@ -1,11 +1,7 @@
-import os
 import requests
 
-BASE_URL = "https://licencia-autoclave.onrender.com"
-ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN")
-
-if not ADMIN_TOKEN:
-    raise RuntimeError("❌ ADMIN_TOKEN no definido.")
+BASE_URL = "https://server-apolo-railway-production.up.railway.app"
+ADMIN_TOKEN = "R4f43l_AP0L0_Secr3t_2025!!"  # mismo token de Railway
 
 payload = {
     "admin_token": ADMIN_TOKEN,
@@ -14,12 +10,13 @@ payload = {
 }
 
 response = requests.post(
-    f"{BASE_URL}/update_expiration",
+    f"{BASE_URL}/renew_license",
     json=payload,
     timeout=10
 )
 
 if response.status_code == 200:
-    print("✅ Licencia actualizada correctamente.")
+    print("✅ Licencia renovada correctamente.")
+    print(response.json())
 else:
     print(f"❌ Error {response.status_code}: {response.text}")

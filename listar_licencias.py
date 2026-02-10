@@ -1,7 +1,7 @@
 import requests
 from datetime import date, datetime
 
-BASE_URL = "https://server-apolo.onrender.com"
+BASE_URL = "https://server-apolo-railway-production.up.railway.app"
 ADMIN_TOKEN = "R4f43l_AP0L0_Secr3t_2025!!"
 
 URL = f"{BASE_URL}/licenses?admin_token={ADMIN_TOKEN}"
