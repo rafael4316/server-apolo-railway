@@ -16,18 +16,8 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(mess
 logger = logging.getLogger(__name__)
 
 # Configuración de la base de datos
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URL = os.environ.get("DATABASE_URL")
-if not DATABASE_URL:
-    raise RuntimeError("DATABASE_URL no definida")
-
-engine = create_engine(
-    DATABASE_URL,
-    echo=False
-)
-
-
-Session = sessionmaker(bind=engine)
+engine = None
+Session = None
 Base = declarative_base()
 
 # Modelo de Licencia
@@ -74,11 +64,21 @@ class RenewRequest(BaseModel):
     
 @app.on_event("startup")
 def startup():
+    global engine, Session
+
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    if not DATABASE_URL:
+        raise RuntimeError("DATABASE_URL no definida")
+
+    engine = create_engine(DATABASE_URL, echo=False)
+    Session = sessionmaker(bind=engine)
+
     try:
         Base.metadata.create_all(bind=engine)
         logger.info("Base de datos inicializada correctamente")
     except OperationalError as e:
         logger.error(f"No se pudo conectar a la base de datos: {e}")
+
 
 # Endpoint de verificación de licencia
 @app.post("/verify")
