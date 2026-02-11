@@ -5,8 +5,8 @@ ADMIN_TOKEN = "R4f43l_AP0L0_Secr3t_2025!!"  # mismo token de Railway
 
 payload = {
     "admin_token": ADMIN_TOKEN,
-    "username": "RAFAE_007",
-    "new_expiration_date": "2026-06-30"
+    "username": "prueba2",
+    "new_expiration_date": "2026-02-12"
 }
 
 response = requests.post(

@@ -139,6 +139,8 @@ async def verify_license(data: VerifyRequest):
         session.close()
         
         
+from datetime import date
+
 @app.post("/validate")
 async def validate_license(data: ValidateRequest):
     session = Session()
@@ -146,10 +148,16 @@ async def validate_license(data: ValidateRequest):
         lic = session.query(License).filter_by(username=data.username).first()
 
         if not lic:
-            raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+            raise HTTPException(
+                status_code=404,
+                detail="Usuario no encontrado."
+            )
 
         if lic.license_key != data.license_key:
-            raise HTTPException(status_code=401, detail="Clave incorrecta.")
+            raise HTTPException(
+                status_code=401,
+                detail="Clave de licencia incorrecta."
+            )
 
         if not lic.active:
             raise HTTPException(
@@ -160,16 +168,27 @@ async def validate_license(data: ValidateRequest):
         if lic.machine_id != data.machine_id:
             raise HTTPException(
                 status_code=401,
-                detail="Licencia no válida para esta máquina."
+                detail="La licencia no corresponde a esta máquina."
             )
 
-        if lic.expiration_date and datetime.date.today() > lic.expiration_date:
-            raise HTTPException(
-                status_code=401,
-                detail="La licencia ha expirado."
-            )
+        # 🔹 Verificación de expiración
+        if lic.expiration_date:
+            if date.today() > lic.expiration_date:
+                raise HTTPException(
+                    status_code=401,
+                    detail="La licencia ha expirado."
+                )
 
-        return {"success": True}
+        return {
+            "success": True,
+            "username": lic.username,
+            "license_key": lic.license_key,
+            "expiration_date": (
+                lic.expiration_date.isoformat()
+                if lic.expiration_date else None
+            ),
+            "active": lic.active
+        }
 
     finally:
         session.close()
