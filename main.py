@@ -57,7 +57,13 @@ class CreateLicenseRequest(BaseModel):
 class RenewRequest(BaseModel):
     admin_token: str
     username: str
-    new_expiration_date: str  # YYYY-MM-DD
+    new_expiration_date: str  # YYYY-MM-
+    
+
+class ValidateRequest(BaseModel):
+    username: str
+    license_key: str
+    machine_id: str
     
     
     
@@ -133,6 +139,42 @@ async def verify_license(data: VerifyRequest):
         session.close()
         
         
+@app.post("/validate")
+async def validate_license(data: ValidateRequest):
+    session = Session()
+    try:
+        lic = session.query(License).filter_by(username=data.username).first()
+
+        if not lic:
+            raise HTTPException(status_code=404, detail="Usuario no encontrado.")
+
+        if lic.license_key != data.license_key:
+            raise HTTPException(status_code=401, detail="Clave incorrecta.")
+
+        if not lic.active:
+            raise HTTPException(
+                status_code=401,
+                detail="Licencia suspendida por falta de pago."
+            )
+
+        if lic.machine_id != data.machine_id:
+            raise HTTPException(
+                status_code=401,
+                detail="Licencia no válida para esta máquina."
+            )
+
+        if lic.expiration_date and datetime.date.today() > lic.expiration_date:
+            raise HTTPException(
+                status_code=401,
+                detail="La licencia ha expirado."
+            )
+
+        return {"success": True}
+
+    finally:
+        session.close()
+
+
 
 @app.post("/renew_license")
 async def renew_license(data: RenewRequest):
